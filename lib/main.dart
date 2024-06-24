@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_block/counter_bloc.dart';
-import 'package:flutter_block/user_bloc/user_bloc.dart';
+import 'product/data/repository/product_repository.dart';
+import 'product/bloc/product_bloc.dart';
+import 'pages/pages.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,84 +14,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Bloc API',
+      builder: (context, child) {
+        // Obtain the current media query information.
+        final mediaQueryData = MediaQuery.of(context);
+        return MediaQuery(
+          // Set the default textScaleFactor to 1.0 for
+          data: mediaQueryData.copyWith(textScaleFactor: 1.0),
+          child: child!,
+        );
+      },
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      /* In building more than one feature where more repositories are required, make use of MultiRepositoryProvider
+         where repositories will be provided as a list of providers
+         to avoided nested RepositoryProvider.
+         This also applies to the case where more than one bloc is being used,
+         then make use of MultiBlocProvider containing list blocs
+       */
+      home: RepositoryProvider<ProductRepository>(
+          create: (context) => ProductRepository(),
+          child: BlocProvider(
+            lazy: false,
+            create: (BuildContext context) => ProductBloc(
+                productRepository: context.read<ProductRepository>()),
+            child: const ProductsPage(),
+          )),
     );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final counterBloc = CounterBloc()..add(CounterDecEvent());
-    final userBloc = UserBloc();
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<CounterBloc>(create: (context) => counterBloc),
-          BlocProvider<UserBloc>(create: (context) => userBloc)
-        ],
-        child: Scaffold(
-          floatingActionButton: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    counterBloc.add(CounterIncEvent());
-                  },
-                  icon: const Icon(Icons.plus_one)),
-              IconButton(
-                  onPressed: () {
-                    counterBloc.add(CounterDecEvent());
-                  },
-                  icon: const Icon(Icons.exposure_minus_1)),
-              IconButton(
-                  onPressed: () {
-                    userBloc.add(UserGetUsersEvent(counterBloc.state));
-                  },
-                  icon: const Icon(Icons.person)),
-              IconButton(
-                  onPressed: () {
-                    userBloc.add(UserGetJobEvent(counterBloc.state));
-                  },
-                  icon: const Icon(Icons.work))
-            ],
-          ),
-          body: SafeArea(
-            child: Center(
-              child: Column(
-                children: [
-                  BlocBuilder<CounterBloc, int>(
-                      bloc: counterBloc,
-                      builder: (context, state) {
-                        return Text(state.toString(),
-                            style: const TextStyle(fontSize: 33));
-                      }),
-                  BlocBuilder<UserBloc, UserState>(
-                      bloc: userBloc,
-                      builder: (context, state) {
-                        final users = state.users;
-                        final jobs = state.job;
-                        return Column(
-                          children: [
-                            if (state.isLoading)
-                              const CircularProgressIndicator(),
-                            if (users.isNotEmpty)
-                              ...state.users.map((e) => Text(e.name)),
-                            if (jobs.isNotEmpty)
-                              ...state.job.map((e) => Text(e.name))
-                          ],
-                        );
-                      }),
-                ],
-              ),
-            ),
-          ),
-        ));
   }
 }
