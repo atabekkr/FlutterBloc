@@ -16,5 +16,4 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 <img src="https://github.com/atabekkr/FlutterBloc/assets/117513819/29e38c90-f5c0-4ee2-a9a0-55c58ca8bff4" width="200">
-![Bookie mobil versiya (9)](https://github.com/atabekkr/FlutterBloc/assets/117513819/29e38c90-f5c0-4ee2-a9a0-55c58ca8bff4)
-![Bookie mobil versiya (10)](https://github.com/atabekkr/FlutterBloc/assets/117513819/3fb047a0-60b8-4cb8-a27c-823e6d931a1f)
+<img src="https://github.com/atabekkr/FlutterBloc/assets/117513819/3fb047a0-60b8-4cb8-a27c-823e6d931a1f" width="200">
